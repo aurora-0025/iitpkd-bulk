@@ -201,6 +201,7 @@ export class UploadCourseListComponent {
         l_headers.every((header) => tableHeaders.includes(header));
       if (!hasAllCourseColumns) {
         this.file = null;
+        this.rows = [];
         alert("The Uploaded File Does Not Have The Required Columns");
       } else if (this.rows.length == 0) {
         this.file = null;
