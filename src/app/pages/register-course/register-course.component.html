@@ -1,0 +1,19 @@
+<main class="container py-3 d-flex flex-column gap-3">
+  <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a class="text-decoration-none" [routerLink]="'/'">Home</a>
+      </li>
+      <li class="breadcrumb-item active text-primary" aria-current="page">
+        Register Course
+      </li>
+    </ol>
+  </nav>
+  <div>
+    <a
+      class="btn btn-outline-primary px-5"
+      [routerLink]="'/register-course/upload'"
+      >Upload Course List</a
+    >
+  </div>
+</main>

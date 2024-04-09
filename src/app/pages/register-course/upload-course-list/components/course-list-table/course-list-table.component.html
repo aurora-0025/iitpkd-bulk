@@ -1,0 +1,234 @@
+<ng-template #uploadConfirmModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Upload Course List</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-describedby="modal-title"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if ((this.totalInvalid$ | async)! > 0) {
+    <p>
+      <strong>
+        found
+        <span class="text-danger">{{ this.totalInvalid$ | async }}</span>
+        invalid fields
+      </strong>
+    </p>
+    <p>
+      <strong
+        >Are you sure that you want to partially upload only
+        {{ this.totalValid$ | async }}/{{
+          (this.totalInvalid$ | async)! + (this.totalValid$ | async)!
+        }}
+        valid rows.</strong
+      >
+    </p>
+    } @else {
+    <p>
+      <strong
+        >Are you sure that you want to upload all
+        {{ this.totalValid$ | async }} rows.</strong
+      >
+    </p>
+    }
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="modal.dismiss('cancel click')"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="modal.close('Ok click'); changePage(2)"
+    >
+      Ok
+    </button>
+  </div>
+</ng-template>
+<form>
+  <!-- @if ((service.totalInvalid$ | async) == 0) {
+  <ngb-alert type="success" [dismissible]="true">All rows are valid</ngb-alert>
+  } @if ((service.totalInvalid$ | async)! > 0) {
+  <ngb-alert type="danger" [dismissible]="true"
+    ><strong>{{ service.totalInvalid$ | async }}</strong> rows contain invalid
+    fields</ngb-alert
+  >
+  } -->
+  <div class="mb-3 row justify-content-between align-items-center">
+    <div class="col-xs-5 col-sm-auto">
+      <div class="col-xs-5 col-sm-auto d-flex align-items-center gap-2">
+        <label for="table-complete-search">search:</label>
+        <div class="col">
+          <input
+            id="table-complete-search"
+            type="text"
+            class="form-control"
+            name="searchTerm"
+            [(ngModel)]="service.searchTerm"
+          />
+        </div>
+      </div>
+    </div>
+    @if (service.loading$ | async) {
+    <span class="col col-form-label">Loading...</span>
+    } @if ((this.totalInvalid$ | async)! > 0 || service.showOnlyErrors) {
+    <div class="col-xs-3 col-sm-auto">
+      <div class="form-check form-switch">
+        <label class="form-check-label" for="showOnlyErrorsToggle"
+          >See rows with errors only</label
+        >
+        <input
+          class="form-check-input"
+          type="checkbox"
+          name="showOnlyErrorsToggle"
+          id="showOnlyErrorsToggle"
+          [(ngModel)]="service.showOnlyErrors"
+        />
+      </div>
+    </div>
+    }
+  </div>
+  <div style="overflow-x: auto">
+    <table class="table table-responsive table-sm table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Status</th>
+          <th scope="col">#</th>
+          @for (header of tableHeaders; track $index) {
+          <th
+            class="table-header"
+            scope="col"
+            [sortable]="header"
+            (sort)="onSort($event)"
+          >
+            {{ header }}
+          </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (course of courses$ | async; track idx; let idx = $index) {
+        <tr>
+          <td
+            class="text-center align-middle"
+            scope="row"
+            [ngClass]="{
+              'table-danger': course.status == 'WARNING',
+              'table-success': course.status == 'SUCCESS'
+            }"
+          >
+            @switch (course.status) { @case ('SUCCESS') {
+            <i class="bi bi-check-circle-fill"></i>
+            } @case ('WARNING') {<i class="bi bi-x-circle-fill"></i>} @default()
+            {
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+            }}
+          </td>
+          <td>{{ course.id }}</td>
+          @for (header of tableHeaders; track idx2; let idx2 = $index) {
+          <td
+            [ngClass]="{
+              'table-danger': course.statusText![header]
+            }"
+          >
+            <div class="input-group">
+              <input
+                style="text-overflow: ellipsis"
+                class="border-0 bg-transparent form-control"
+                type="text"
+                name="{{ idx }}_{{ idx2 }}"
+                [(ngModel)]="course[header]"
+                (change)="this.service.parseRow(course)"
+                [title]="course[header]"
+                [popoverTitle]="course.status == 'WARNING' ? 'Warning' : ''"
+                triggers="mouseenter:mouseleave"
+                [disablePopover]="!course.statusText![header]"
+                [ngbPopover]="course.statusText![header]"
+                container="body"
+              />
+            </div>
+          </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row justify-content-between p-2">
+    <div class="col-xs-3 col-sm-auto">
+      <ngb-pagination
+        [maxSize]="6"
+        [ellipses]="true"
+        [collectionSize]="(total$ | async)!"
+        [(page)]="service.page"
+        [pageSize]="service.pageSize"
+      >
+      </ngb-pagination>
+    </div>
+    <div class="col-xs-3 col-sm-auto">
+      <select
+        class="form-select"
+        style="width: auto"
+        name="pageSize"
+        [(ngModel)]="service.pageSize"
+      >
+        <option [ngValue]="6">6 items per page</option>
+        <option [ngValue]="8">8 items per page</option>
+        <option [ngValue]="10">10 items per page</option>
+      </select>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between">
+    <div class="flex-fill">
+      @if ((this.totalInvalid$ | async)! > 0) {
+      <div ngbDropdown class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          id="downloadDropdown"
+          ngbDropdownToggle
+        >
+          Download Errornous Data
+        </button>
+        <div ngbDropdownMenu aria-labelledby="downloadDropdown">
+          <button ngbDropdownItem (click)="downloadAllInvalid('xlsx')">
+            <i class="bi bi-filetype-xlsx"></i>
+            as .xlsx
+          </button>
+          <button ngbDropdownItem (click)="downloadAllInvalid('csv')">
+            <i class="bi bi-filetype-csv"></i>
+            as .csv
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+
+    <div>
+      @if ((totalInvalid$ | async)! > 0) {
+      <button class="btn btn-outline-secondary me-2" (click)="changePage(0)">
+        Upload Corrected Entries
+      </button>
+      } @else {
+      <button class="btn btn-outline-secondary me-2" (click)="changePage(0)">
+        Upload Another
+      </button>
+      }
+
+      <button
+        class="btn btn-primary me-2"
+        (click)="openModal(uploadConfirmModal)"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</form>

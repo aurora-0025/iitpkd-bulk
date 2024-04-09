@@ -1,0 +1,191 @@
+<div class="container py-3 d-flex flex-column gap-3">
+  <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a class="text-decoration-none" [routerLink]="'/'">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a class="text-decoration-none" [routerLink]="'/register-course'"
+          >Register Course</a
+        >
+      </li>
+      <li class="breadcrumb-item active text-primary" aria-current="page">
+        Upload
+      </li>
+    </ol>
+  </nav>
+  <div class="card">
+    <div class="card-header p-0">
+      <div class="d-flex">
+        <div
+          class="col text-center d-flex {{
+            currentPage == 0 ? 'bg-primary text-light' : 'bg-light'
+          }} flex-column justify-content-center py-2"
+        >
+          Upload
+        </div>
+        <div
+          class="col text-center d-flex {{
+            currentPage == 1 ? 'bg-primary text-light' : 'bg-light'
+          }} flex-column justify-content-center py-2"
+        >
+          Preview and Edit
+        </div>
+        <div
+          class="col text-center d-flex {{
+            currentPage == 2 ? 'bg-primary text-light' : 'bg-light'
+          }} flex-column justify-content-center py-2"
+        >
+          Export
+        </div>
+      </div>
+    </div>
+
+    @if (currentPage == 0) {
+    <div class="card-body d-flex flex-column">
+      <div class="d-flex justify-content-center align-items-center gap-1">
+        <div class="d-flex align-items-center">Download Latest Template:</div>
+        <button
+          type="button"
+          (click)="downloadTemplate('xlsx')"
+          style="max-width: 80px"
+          class="col btn btn-outline-primary d-flex justify-content-center"
+        >
+          <i class="bi bi-filetype-xlsx"></i>
+          xlsx</button
+        >|<button
+          type="button"
+          (click)="downloadTemplate('csv')"
+          style="max-width: 80px"
+          class="col btn btn-outline-primary d-flex justify-content-center"
+        >
+          <i class="bi bi-filetype-csv"></i>
+          csv
+        </button>
+      </div>
+      <div>
+        @if (rows.length > 0) {
+        <p class="text-info">{{ rows.length }} rows uploaded</p>
+        } @else {
+        <p class="text-info">No entries uploaded yet</p>
+        }
+      </div>
+
+      <div class="mt-2" fileDragDrop (filesChangeEmiter)="onFileChange($event)">
+        <div class="text-wrapper">
+          <div
+            style="min-height: 300px; cursor: pointer"
+            class="text-center d-flex flex-column justify-content-center align-items-center"
+          >
+            @if (showProgress) {
+            <ngb-progressbar
+              class="mb-3"
+              type="success"
+              [value]="progress"
+              [striped]="true"
+              [animated]="true"
+              ><i>{{ progress }}%</i></ngb-progressbar
+            >
+            }
+            <input
+              class="d-none"
+              type="file"
+              accept=".xlsx, .csv"
+              name="file"
+              id="file"
+              #fileInput
+              (change)="onFileInputChange($event)"
+            />
+            <label
+              style="cursor: pointer"
+              class="d-flex flex-column align-items-center w-100"
+              for="file"
+            >
+              @if (!file) {
+              <i
+                style="font-size: 60px"
+                class="bi bi-cloud-arrow-up-fill text-primary"
+              ></i>
+
+              <p class="textLink text-primary">
+                Select your file or Drop it here!
+              </p>
+              } @else {
+              <span class="textLink">{{ file.name }} </span>
+              }</label
+            >
+          </div>
+        </div>
+      </div>
+      <div class="align-self-end mt-3">
+        <button
+          [disabled]="rows.length == 0"
+          type="button"
+          (click)="resetData()"
+          class="col btn btn-secondary me-2"
+        >
+          Reset Data
+        </button>
+        <button
+          type="button"
+          [disabled]="rows.length == 0"
+          (click)="changePage(1)"
+          class="col btn btn-primary"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+    } @else if (currentPage == 1 && rows != undefined) {
+    <div class="row card-body">
+      <ngbd-table-complete
+        (goToPageEvent)="changePage($event)"
+        [rowData]="rows"
+      ></ngbd-table-complete>
+      @if (showToast) {
+      <ngb-toast
+        header="Errors"
+        (hidden)="showToast = false"
+        class="fixed-top m-auto"
+        style="top: 5rem"
+      >
+        Validation complete. {{ getTotalInvalid() }} errors found in data.
+      </ngb-toast>
+      }
+    </div>
+    } @else if (currentPage == 2) {
+    <div class="card-body text-center mx-5">
+      <ngb-progressbar
+        type="success"
+        [value]="progress"
+        [striped]="true"
+        [animated]="true"
+        ><i>{{ progress }}%</i></ngb-progressbar
+      >
+      @if (progress < 100) {
+      <div class="text-center">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <strong>Exporting</strong>
+      </div>
+
+      } @else {
+      <div
+        class="text-center d-flex flex-column justify-content-center align-items-center"
+      >
+        <i style="font-size: 200px" class="bi bi-check-circle"></i>
+        <strong class="text-success">Export Successful!</strong>
+      </div>
+      }
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+      <button
+        class="btn btn-outline-primary mt-3"
+        (click)="changePage(0, true)"
+      >
+        Upload Another Course List
+      </button>
+    </div>
+    }
+  </div>
+</div>

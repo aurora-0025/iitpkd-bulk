@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-sm navbar-light bg-light mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand"
+      ><img src="assets/logo_2.png" width="350" alt=""
+    /></a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="isMenuCollapsed = !isMenuCollapsed"
+    >
+      &#9776;
+    </button>
+    <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto gap-2">
+        <li class="nav-item d-flex flex-column align-items-center gap-1">
+          <i class="bi bi-bell-fill text-primary"></i>
+          <button
+            class="btn btn-outline-primary"
+            (click)="isMenuCollapsed = true"
+          >
+            Notifications
+          </button>
+        </li>
+        <li class="nav-item d-flex flex-column align-items-center gap-1">
+          <i class="bi bi-house-fill text-primary"></i>
+          <button
+            class="btn btn-outline-primary"
+            (click)="isMenuCollapsed = true"
+          >
+            Home
+          </button>
+        </li>
+        <li class="nav-item d-flex flex-column align-items-center gap-1">
+          <i class="bi bi-person-fill text-primary"></i>
+          <button
+            class="btn btn-outline-primary"
+            (click)="isMenuCollapsed = true"
+          >
+            Phd Scholar
+          </button>
+        </li>
+        <li class="nav-item d-flex flex-column align-items-center gap-1">
+          <i class="bi bi-box-arrow-left text-primary"></i>
+          <button
+            class="btn btn-outline-primary"
+            (click)="isMenuCollapsed = true"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<router-outlet />
