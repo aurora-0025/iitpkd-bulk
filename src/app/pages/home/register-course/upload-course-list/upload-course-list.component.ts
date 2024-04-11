@@ -3,7 +3,7 @@ import { FileDragNDropDirective } from "./file-drag-n-drop.directive";
 import { CommonModule } from "@angular/common";
 import { read, utils, writeFile } from "xlsx";
 import { NgbdTableComplete } from "./components/course-list-table/course-list-table.component";
-import { Course, tableHeaders } from "./components/course-list-table/couse-list-validator";
+import { Course, tableHeaders } from "./couse-list-validator";
 import { NgbProgressbar, NgbToast } from "@ng-bootstrap/ng-bootstrap";
 import { RouterModule } from "@angular/router";
 

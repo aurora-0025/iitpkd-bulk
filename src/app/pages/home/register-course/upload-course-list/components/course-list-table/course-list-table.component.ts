@@ -27,7 +27,7 @@ import {
 import { DecimalPipe, AsyncPipe, CommonModule } from "@angular/common";
 import { Observable } from "rxjs";
 import { CourseListService } from "./course-list.service";
-import { Course, tableHeaders } from "./couse-list-validator";
+import { Course, tableHeaders } from "../../couse-list-validator";
 import { utils, writeFile } from "xlsx";
 
 @Component({

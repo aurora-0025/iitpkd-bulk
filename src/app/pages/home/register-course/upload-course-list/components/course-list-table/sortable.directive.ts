@@ -1,5 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
-import { Course } from "./couse-list-validator";
+import { Course } from "../../couse-list-validator";
 
 export type SortColumn = keyof Course | "";
 export type SortDirection = "asc" | "desc" | "";
