@@ -5,8 +5,7 @@ import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { DecimalPipe } from "@angular/common";
 import { debounceTime, delay, switchMap, tap } from "rxjs/operators";
 import { SortColumn, SortDirection } from "./sortable.directive";
-import { Course, statusText } from "../../course.model";
-import schema from "./couse-list-validator";
+import schema, { Course } from "./couse-list-validator";
 import { ValidationError } from "yup";
 
 interface SearchResult {
@@ -160,14 +159,14 @@ export class CourseListService {
     let courses = sort(this._courseList, sortColumn, sortDirection);
     let total = courses.length;
     if (total > 0) {
-      const totalInvalid = courses.filter((v) => v.status == "WARNING").length;
-      const totalLoading = courses.filter((v) => v.status == "LOADING").length;
+      const totalInvalid = courses.filter((v) => v["status"] == "WARNING").length;
+      const totalLoading = courses.filter((v) => v["status"] == "LOADING").length;
       if (totalLoading == 0) {
         this._totalInvalid$.next(totalInvalid);
         this._totalValid$.next(total - totalInvalid);
 
         if (showOnlyErrors) {
-          courses = courses.filter((course) => course.status == "WARNING");
+          courses = courses.filter((course) => course["status"] == "WARNING");
         }
         courses = courses.filter((course) =>
           matches(course, searchTerm, this.pipe)
@@ -188,18 +187,18 @@ export class CourseListService {
   async parseRow(row: Course) {
     setTimeout(async () => {
       try {
-        row.statusText = new statusText();
+        row["statusText"] = {};
         await schema.validate(row, { abortEarly: false });
-        row.status = "SUCCESS";
+        row["status"] = "SUCCESS";
       } catch (error: unknown) {
         if (error instanceof ValidationError) {
-          row.status = "WARNING";
+          row["status"] = "WARNING";
           if (error.inner.length > 0) {
             error.inner.forEach((e) => {
-              if (e.path) row.statusText![e.path] = e.message;
+              if (e.path) row["statusText"]![e.path] = e.message;
             });
           } else {
-            if (error.path) row.statusText![error.path] = error.message;
+            if (error.path) row["statusText"]![error.path] = error.message;
           }
         }
       }

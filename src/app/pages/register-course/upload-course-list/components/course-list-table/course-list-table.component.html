@@ -120,22 +120,22 @@
             class="text-center align-middle"
             scope="row"
             [ngClass]="{
-              'table-danger': course.status == 'WARNING',
-              'table-success': course.status == 'SUCCESS'
+              'table-danger': course['status'] == 'WARNING',
+              'table-success': course['status'] == 'SUCCESS'
             }"
           >
-            @switch (course.status) { @case ('SUCCESS') {
+            @switch (course['status']) { @case ('SUCCESS') {
             <i class="bi bi-check-circle-fill"></i>
             } @case ('WARNING') {<i class="bi bi-x-circle-fill"></i>} @default()
             {
             <div class="spinner-border spinner-border-sm" role="status"></div>
             }}
           </td>
-          <td>{{ course.id }}</td>
+          <td>{{ course['id'] }}</td>
           @for (header of tableHeaders; track idx2; let idx2 = $index) {
           <td
             [ngClass]="{
-              'table-danger': course.statusText![header]
+              'table-danger': course['statusText']![header]
             }"
           >
             <div class="input-group">
@@ -147,10 +147,10 @@
                 [(ngModel)]="course[header]"
                 (change)="this.service.parseRow(course)"
                 [title]="course[header]"
-                [popoverTitle]="course.status == 'WARNING' ? 'Warning' : ''"
+                [popoverTitle]="course['status'] == 'WARNING' ? 'Warning' : ''"
                 triggers="mouseenter:mouseleave"
-                [disablePopover]="!course.statusText![header]"
-                [ngbPopover]="course.statusText![header]"
+                [disablePopover]="!course['statusText']![header]"
+                [ngbPopover]="course['statusText']![header]"
                 container="body"
               />
             </div>
@@ -212,7 +212,7 @@
       }
     </div>
 
-    <div>
+    <div class="d-flex">
       @if ((totalInvalid$ | async)! > 0) {
       <button class="btn btn-outline-secondary me-2" (click)="changePage(0)">
         Upload Corrected Entries

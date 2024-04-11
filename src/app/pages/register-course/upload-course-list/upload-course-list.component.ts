@@ -2,9 +2,8 @@ import { Component } from "@angular/core";
 import { FileDragNDropDirective } from "./file-drag-n-drop.directive";
 import { CommonModule } from "@angular/common";
 import { read, utils, writeFile } from "xlsx";
-import { Course } from "./course.model";
 import { NgbdTableComplete } from "./components/course-list-table/course-list-table.component";
-import { tableHeaders } from "./components/course-list-table/couse-list-validator";
+import { Course, tableHeaders } from "./components/course-list-table/couse-list-validator";
 import { NgbProgressbar, NgbToast } from "@ng-bootstrap/ng-bootstrap";
 import { RouterModule } from "@angular/router";
 
@@ -88,12 +87,11 @@ export class UploadCourseListComponent {
     this.showProgress = true;
     this.progress = 0;
     const filtered = this.rows
-      .filter((row) => row.status == "SUCCESS")
+      .filter((row) => row["status"] == "SUCCESS")
       .map((c) => {
-        delete c.rowStatusText;
-        delete c.statusText;
-        delete c.status;
-        delete c.id;
+        delete c["statusText"];
+        delete c["status"];
+        delete c["id"];
         return c;
       });
     const delay = 100;
@@ -177,11 +175,11 @@ export class UploadCourseListComponent {
         let values = Object.values(row);
         if (values[values.length - 1] == "EXAMPLE") return;
         let updated_id =
-          row.id !== undefined && row.id < this.rows.length
-            ? row.id
+          row["id"] !== undefined && row["id"] < this.rows.length
+            ? row["id"]
             : this.rows.length + 1;
-        row.id = updated_id;
-        this.rows[row.id! - 1] = row;
+        row["id"] = updated_id;
+        this.rows[row["id"]! - 1] = row;
       });
 
       const l_headers: string[] = [];
@@ -195,7 +193,7 @@ export class UploadCourseListComponent {
           l_headers.push(l_cell.v);
         }
       }
-
+      
       const hasAllCourseColumns =
         tableHeaders.every((key) => l_headers.includes(key)) &&
         l_headers.every((header) => tableHeaders.includes(header));
@@ -214,6 +212,6 @@ export class UploadCourseListComponent {
   }
 
   getTotalInvalid() {
-    return this.rows.filter((v) => v.status == "WARNING").length;
+    return this.rows.filter((v) => v["status"] == "WARNING").length;
   }
 }

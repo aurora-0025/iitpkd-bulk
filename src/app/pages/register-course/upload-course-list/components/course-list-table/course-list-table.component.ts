@@ -27,8 +27,7 @@ import {
 import { DecimalPipe, AsyncPipe, CommonModule } from "@angular/common";
 import { Observable } from "rxjs";
 import { CourseListService } from "./course-list.service";
-import { Course, statusText } from "../../course.model";
-import { tableHeaders } from "./couse-list-validator";
+import { Course, tableHeaders } from "./couse-list-validator";
 import { utils, writeFile } from "xlsx";
 
 @Component({
@@ -78,8 +77,8 @@ export class NgbdTableComplete implements OnInit {
 
     for (let i = 0; i < this.service.courseList.length; i++) {
       const element = this.service.courseList[i];
-      element.status = "LOADING";
-      element.statusText = new statusText();
+      element["status"] = "LOADING";
+      element["statusText"] = {};
       this.service.parseRow(element);
     }
   }
@@ -93,7 +92,7 @@ export class NgbdTableComplete implements OnInit {
     const data = this.service.courseList;
 
     const filtered = data
-      .filter((row) => row.status == "WARNING")
+      .filter((row) => row["status"] == "WARNING")
       .map(({ status, statusText, ...rest }) => rest);
 
     const worksheet = utils.json_to_sheet(filtered, {
@@ -106,7 +105,7 @@ export class NgbdTableComplete implements OnInit {
   openModal(content: TemplateRef<any>) {
     if (
       this.service.courseList.length ==
-      this.service.courseList.filter((v) => v.status == "WARNING").length
+      this.service.courseList.filter((v) => v["status"] == "WARNING").length
     ) {
       alert("There are no valid rows");
     } else {
